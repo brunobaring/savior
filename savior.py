@@ -152,38 +152,36 @@ class MovingAverageStrategy:
 	    return ema
 
 
-	def evaluateMovingAverage(self, movingAverage):
+	def evaluateMovingAverage(self, movingAverages):
 
 		if self.shouldPrintMovingAverages:
 			savPrint("Printing Moving Averages...", 3)
-			for i in range(len(movingAverage)):
-				savPrint(str(i + 1) + "- " + str(movingAverage[i]))
+			for i in range(len(movingAverages)):
+				savPrint(str(i + 1) + "- " + str(movingAverages[i]))
 
-		# WHILE a média atual não for a última AND a média móvel anterior for MENOR que a atual
-		while i < len(movingAverage) and movingAverage[i-1] < movingAverage[i]:
-			# IF a média atual for a última
-			if len(movingAverage) == i-1:
-				return "HOOOODL"
-			i+=1
+		lastEma = movingAverages[-1]
 
-		# IF a média atual for a última AND a média anterior for MENOR que a média atual
-		if len(movingAverage) == i-1 and movingAverage[i-1] > movingAverage[i]:
-			return "SEEEEELL"
+		isAtLeastOneEmaBelowInPreviousTendency = False
+		for i, ema in enumerate(movingAverages):
+			if lastEma[-2] - ema[-2] > 0:
+				isAtLeastOneEmaBelowInPreviousTendency = True
+			if lastEma[-1] - ema[-1] < 0:
+				if i == len(movingAverages)-1 and isAtLeastOneEmaBelowInPreviousTendency:
+					return "BUY"
+			else:
+				break
 
-		i = 1
-		# WHILE a média atual não for a última AND a média móvel anterior for MAIOR que a atual
-		while i < len(movingAverage) and movingAverage[i-1] > movingAverage[i]:
-			# IF a média atual for a última
-			if len(movingAverage) == i-1:
-				return "HOOOODL"
-			i+=1
+		isAtLeastOneEmaAboveInPreviousTendency = False
+		for i, ema in enumerate(movingAverages):
+			if lastEma[-2] - ema[-2] < 0:
+				isAtLeastOneEmaAboveInPreviousTendency = True
+			if lastEma[-1] - ema[-1] > 0:
+				if i == len(movingAverages)-1 and isAtLeastOneEmaAboveInPreviousTendency:
+					return "SELL"
+			else:
+				break
 
-		# IF a média atual for a última AND a média anterior for MAIOR que a média atual
-		if len(movingAverage) == i-1 and movingAverage[i-1] < movingAverage[i]:
-			return "BUUUUUY"
-
-		return "HOOOODL"
-
+		return "HOLD"
 
 
 class Candle:
