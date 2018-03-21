@@ -9,17 +9,38 @@ import urllib.request
 from datetime import datetime, timedelta, date
 from dateutil.parser import parse
 from datetime import datetime
+from apscheduler.schedulers.blocking import BlockingScheduler
+
 
 
 class Savior:
 
-	def start(self):
+####################### CONFIGURABLE #######################
+	#SHOULD ACTIVATE SCHEDULER
+	# timer que roda o bot de tanto em tanto tempo
+	shouldActivateScheduler = True
 
+	#SCHEDULER SECONDS
+	# intervalo de tempo para rodar o bot, caso esteja ativado
+	schedulerSeconds = 4
+####################### CONFIGURABLE #######################
+
+	def start(self):
+		if self.shouldActivateScheduler:
+			self.activateScheduler()
+		else:
+			self.whatShouldYouDo()
+
+	def whatShouldYouDo(self):
 		savPrint("Savior Started.", 3)
 		movingAverageStrategy = MovingAverageStrategy()
 		savPrint("YOU SHOULD " + movingAverageStrategy.whatShouldYouDo() + "!!!", 4)
 
-
+	def activateScheduler(self):
+		savPrint("Ctrl + C para matar o Savior.")
+		scheduler = BlockingScheduler()
+		scheduler.add_job(self.whatShouldYouDo, 'interval', seconds=self.schedulerSeconds)
+		scheduler.start()
 
 
 class MovingAverageStrategy:
@@ -41,7 +62,7 @@ class MovingAverageStrategy:
 	# escala exponencial das médias móveis
 	limits = [8, 13, 21, 55]
 
-	#ENDTIMEFORMAT
+	#END TIME FORMAT
 	# formato: YYYY-MM-dd I
 	# a data final para o cálculo da média móvel.
 	# a data inicial é calculada a partir do interval e o último limite da escala
@@ -50,11 +71,11 @@ class MovingAverageStrategy:
 	endDay = 3
 	endHour = 13
 
-	#SHOULDPRINTPAYLOAD
+	#SHOULD PRINT PAYLOAD
 	# exibe ou não o resultado da API
 	shouldPrintPayload = False
 
-	#SHOULDPRINTPAYLOAD
+	#SHOULD PRINT PAYLOAD
 	# exibe ou não o resultado da API
 	shouldPrintMovingAverages = True
 
@@ -217,4 +238,7 @@ def savPrint(string, indent = 1):
 def toEpoch(date):
 	return (date - datetime(1970,1,1)).total_seconds()
 
+
+
 savior = Savior().start()
+
