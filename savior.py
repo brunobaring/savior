@@ -29,13 +29,13 @@ class MovingAverageStrategy:
 
 	#PAIR
 	# ETHETC, LTCUSDT, BTCETH, por aí vai, nesse formato, em caixa alta.
-	symbol = "BTCUSDT"
+	symbol = "LTCUSDT"
 
 	#INTERVAL
 	# intervalo de 12 horas. só pode ser 12, 8, 4, 2, 1. Por enquanto só pode horas aqui nesse programa. Rola de usar outros tempos.
 	# m -> minutes; h -> hours; d -> days; w -> weeks; M -> months
 	# 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
-	interval = 12
+	interval = 4
 
 	#LIMITS
 	# escala exponencial das médias móveis
@@ -46,9 +46,9 @@ class MovingAverageStrategy:
 	# a data final para o cálculo da média móvel.
 	# a data inicial é calculada a partir do interval e o último limite da escala
 	endYear = 2018
-	endMonth = 1
-	endDay = 3
-	endHour = 13
+	endMonth = 2
+	endDay = 27
+	endHour = 12
 
 	#SHOULDPRINTPAYLOAD
 	# exibe ou não o resultado da API
