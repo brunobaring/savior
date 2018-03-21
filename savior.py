@@ -18,7 +18,7 @@ class Savior:
 ####################### CONFIGURABLE #######################
 	#SHOULD ACTIVATE SCHEDULER
 	# timer que roda o bot de tanto em tanto tempo
-	shouldActivateScheduler = True
+	shouldActivateScheduler = False
 
 	#SCHEDULER SECONDS
 	# intervalo de tempo para rodar o bot, caso esteja ativado
@@ -50,7 +50,7 @@ class MovingAverageStrategy:
 
 	#PAIR
 	# ETHETC, LTCUSDT, BTCETH, por aí vai, nesse formato, em caixa alta.
-	symbol = "LTCUSDT"
+	symbol = "BTCUSDT"
 
 	#INTERVAL
 	# intervalo de 12 horas. só pode ser 12, 8, 4, 2, 1. Por enquanto só pode horas aqui nesse programa. Rola de usar outros tempos.
@@ -69,7 +69,7 @@ class MovingAverageStrategy:
 	endYear = 2018
 	endMonth = 2
 	endDay = 27
-	endHour = 12
+	endHour = 9
 
 	#SHOULD PRINT PAYLOAD
 	# exibe ou não o resultado da API
@@ -89,7 +89,7 @@ class MovingAverageStrategy:
 		# -> pega a data final
 		endDate = datetime(self.endYear,self.endMonth,self.endDay,self.endHour)
 		#   -> subtrai a quantidade de horas do intervalo vezes o último limite
-		endDateWithSubtractedHours = endDate - timedelta(hours=self.interval*self.limits[-1]+1)
+		endDateWithSubtractedHours = endDate - timedelta(hours=self.interval*self.limits[-1]*2+1)
 
 		self.startTime = str(int(toEpoch(endDateWithSubtractedHours))).ljust(13, '0')
 		self.endTime = str(int(toEpoch(endDate))).ljust(13, '0')
@@ -117,7 +117,7 @@ class MovingAverageStrategy:
 			"interval=" + str(self.interval) + "h",
 			"startTime=" + self.startTime,
 			"endTime=" + self.endTime,
-			"limit=" + str(self.limits[-1]+1)
+			"limit=" + str(self.limits[-1]*2+1)
 		]
 		url = baseApi + apiVersion + endpoint + "?" + "&".join(params)
 
@@ -180,14 +180,14 @@ class MovingAverageStrategy:
 			for i in range(len(movingAverages)):
 				savPrint(str(i + 1) + "- " + str(movingAverages[i]))
 
-		lastEma = movingAverages[-1]
+		lastEma = movingAverages[-1]		
 
 		isAtLeastOneEmaBelowInPreviousTendency = False
 		for i, ema in enumerate(movingAverages):
 			if lastEma[-2] - ema[-2] > 0:
 				isAtLeastOneEmaBelowInPreviousTendency = True
 			if lastEma[-1] - ema[-1] < 0:
-				if i == len(movingAverages)-1 and isAtLeastOneEmaBelowInPreviousTendency:
+				if i == len(movingAverages)-2 and isAtLeastOneEmaBelowInPreviousTendency:
 					return "BUY"
 			else:
 				break
@@ -197,7 +197,7 @@ class MovingAverageStrategy:
 			if lastEma[-2] - ema[-2] < 0:
 				isAtLeastOneEmaAboveInPreviousTendency = True
 			if lastEma[-1] - ema[-1] > 0:
-				if i == len(movingAverages)-1 and isAtLeastOneEmaAboveInPreviousTendency:
+				if i == len(movingAverages)-2 and isAtLeastOneEmaAboveInPreviousTendency:
 					return "SELL"
 			else:
 				break
