@@ -1,16 +1,14 @@
  # -*- coding: utf-8 -*-
-from urllib.request import urlopen
-import json
 import time
 import datetime
 import dateutil.parser
 import urllib.request
-
+import requests
 from datetime import datetime, timedelta, date
 from dateutil.parser import parse
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-
+import pprint
 
 
 class Savior:
@@ -18,7 +16,7 @@ class Savior:
 ####################### CONFIGURABLE #######################
 	#SHOULD ACTIVATE SCHEDULER
 	# timer que roda o bot de tanto em tanto tempo
-	shouldActivateScheduler = True
+	shouldActivateScheduler = False
 
 	#SCHEDULER SECONDS
 	# intervalo de tempo para rodar o bot, caso esteja ativado
@@ -130,12 +128,6 @@ class MovingAverageStrategy:
 			candles.append(candle)
 		return candles
 
-	# def calculateMovingAverageCandleQty(self, qty, candles):
-	# 	candleCloseSummary = 0
-	# 	for i in range(int(qty)-1):
-	# 		candleCloseSummary += candles[i].close
-	# 	return candleCloseSummary/float(qty)
-
 	def ema(self, candles, n):
 	    """
 	    returns an n period exponential moving average for
@@ -148,7 +140,7 @@ class MovingAverageStrategy:
 	    returns a numeric array of the exponential
 	    moving average
 	    """
-	    print(str(len(candles)) + " " + str(n))
+
 	    s = [] # array(s)
 	    for candle in candles:
 	    	s.append(candle.close)
@@ -221,13 +213,21 @@ class Candle:
 def makeRequest(url, shouldPrintPayload):
 
 	savPrint("Making Request to URL " + url)
-	contents = urllib.request.urlopen(url).read()
-	parsed = json.loads(contents)
+
+	r = requests.get(url)
+
+	if r.status_code == 429 :
+		savPrint("You should stop the script", 6)
+	if r.status_code == 418:
+		savPrint("You`ve been banned from Binance", 6)
+		exit()
+
 
 	if shouldPrintPayload:
-		savPrint(json.dumps(parsed, indent=3, sort_keys=True))
+		pp = pprint.PrettyPrinter(indent=4)
+		pp.pprint(r.json())
 
-	return parsed
+	return r.json()
 
 def savPrint(string, indent = 1):
 	indented = ""
