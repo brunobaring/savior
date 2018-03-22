@@ -10,6 +10,14 @@ from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 import pprint
 
+class IntervalTest:
+	
+	buyPrices = []
+	sellPrices = []
+
+	# endTime = 
+
+
 
 class Savior:
 
@@ -81,52 +89,30 @@ class MovingAverageStrategy:
 
 	startTime = ""
 	endTime = ""
+	dataLimit = 0
 
 	def __init__(self):
+
+		self.dataLimit = self.limits[-1]*2+1
 
 		# -> pega a data final
 		endDate = datetime(self.endYear,self.endMonth,self.endDay,self.endHour)
 		#   -> subtrai a quantidade de horas do intervalo vezes o último limite
-		endDateWithSubtractedHours = endDate - timedelta(hours=self.interval*self.limits[-1]*2+1)
+		endDateWithSubtractedHours = endDate - timedelta(hours=self.interval*self.dataLimit)
 
 		self.startTime = str(int(toEpoch(endDateWithSubtractedHours))).ljust(13, '0')
 		self.endTime = str(int(toEpoch(endDate))).ljust(13, '0')
 
 	def whatShouldYouDo(self):
-		url = self.prepareRequest()
+		url = KlinesResource().urlFor(self)
 		json = makeRequest(url, self.shouldPrintPayload)
-		candles = self.parseToCandles(json)
+		candles = CandleFactory.candlesWithJson(json)
 
 		movingAverage = []
 		for limit in self.limits:
 			movingAverage.append(self.ema(candles, limit))
 
 		return self.evaluateMovingAverage(movingAverage)
-
-	def prepareRequest(self):
-
-		savPrint("Preparing Request...")
-
-		baseApi = "https://api.binance.com/api"
-		apiVersion = "/v1"
-		endpoint = "/klines"
-		params = [
-			"symbol=" + self.symbol,
-			"interval=" + str(self.interval) + "h",
-			"startTime=" + self.startTime,
-			"endTime=" + self.endTime,
-			"limit=" + str(self.limits[-1]*2+1)
-		]
-		url = baseApi + apiVersion + endpoint + "?" + "&".join(params)
-
-		return url
-
-	def parseToCandles(self, jsonCandles):
-		candles = []
-		for jsonCandle in jsonCandles:
-			candle = Candle(jsonCandle)
-			candles.append(candle)
-		return candles
 
 	def ema(self, candles, n):
 	    """
@@ -197,6 +183,21 @@ class MovingAverageStrategy:
 		return "HOLD"
 
 
+class CandleFactory:
+
+	@staticmethod
+	def oneCandleWithJson(json):
+		return Candle(json)
+
+	@staticmethod
+	def candlesWithJson(json):
+		candles = []
+		for jsonCandle in json:
+			candle = CandleFactory.oneCandleWithJson(jsonCandle)
+			candles.append(candle)
+		return candles
+
+
 class Candle:
 
 	openTime = 0
@@ -222,7 +223,6 @@ def makeRequest(url, shouldPrintPayload):
 		savPrint("You`ve been banned from Binance", 6)
 		exit()
 
-
 	if shouldPrintPayload:
 		pp = pprint.PrettyPrinter(indent=4)
 		pp.pprint(r.json())
@@ -240,5 +240,28 @@ def toEpoch(date):
 
 
 
-savior = Savior().start()
+class Resources:
 
+	baseApi = "https://api.binance.com/api"
+	apiVersion = "/v1"
+	endpoint = ""
+	params = []
+
+	def getUrl(self):
+		return self.baseApi + self.apiVersion + self.endpoint + "?" + "&".join(self.params)
+
+class KlinesResource(Resources):
+
+	endpoint = "/klines"
+
+	def urlFor(self, data):
+		self.params = [
+			"symbol=" + data.symbol,
+			"interval=" + str(data.interval) + "h",
+			"startTime=" + data.startTime,
+			"endTime=" + data.endTime,
+			"limit=" + str(data.dataLimit)
+		]
+		return self.getUrl()
+
+savior = Savior().start()
