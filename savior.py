@@ -15,8 +15,14 @@ class IntervalTest:
 	buyPrices = []
 	sellPrices = []
 
-	# endTime = 
+	startYear = 2018
+	startMonth = 2
+	startDay = 27
+	startHour = 9
 
+	interval = 12
+
+	initialBalance = 1000
 
 
 class Savior:
@@ -79,7 +85,7 @@ class MovingAverageStrategy:
 
 	#SHOULD PRINT PAYLOAD
 	# exibe ou não o resultado da API
-	shouldPrintPayload = False
+	shouldPrintPayload = True
 
 	#SHOULD PRINT PAYLOAD
 	# exibe ou não o resultado da API
