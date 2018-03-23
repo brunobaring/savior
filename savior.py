@@ -9,22 +9,113 @@ from dateutil.parser import parse
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 import pprint
+from fulldata import allData
+import json
 
-class IntervalTest:
+class TestableData:
+
+	@staticmethod
+	def prices():
+		candles = allData()
+		prices = []
+		for candle in candles:
+			prices.append(candle[4])
+		return prices
+
+	def jsonData():
+		return allData()
+
+
+
+class TestSavior:
 	
-	buyPrices = []
-	sellPrices = []
+	prices = []
+	startYear = 0
+	startMonth = 0
+	startDay = 0
+	startHour = 0
+	endYear = 0
+	endMonth = 0
+	endDay = 0
+	endHour = 0
+	interval = 0
+	initialBalance = 0
 
-	startYear = 2018
-	startMonth = 2
-	startDay = 27
-	startHour = 9
+	def __init__(
+		self,
+		startYear = 2017,
+		startMonth = 8,
+		startDay = 17,
+		startHour = 21,
+		endYear = 2017,
+		endMonth = 11,
+		endDay = 9,
+		endHour = 10,
+		interval = 1,
+		initialBalance = 1000
+	):
 
-	interval = 12
+		self.startYear = startYear
+		self.startMonth = startMonth
+		self.startDay = startDay
+		self.startHour = startHour
+		self.endYear = endYear
+		self.endMonth = endMonth
+		self.endDay = endDay
+		self.endHour = endHour
+		self.verifyDates()
+		self.prices = TestableData.prices()
 
-	initialBalance = 1000
+	def start(self):
+		self.whatShouldYouDo()
 
+	def whatShouldYouDo(self):
+		savPrint("Savior Started.", 3)
 
+		candles = TestableData.jsonData()
+		for candle in candles:
+			candleDate = datetime.fromtimestamp(float(candle[0])/1000)
+			exponentialMovingAverageStrategy = ExponentialMovingAverageStrategy(
+					interval = 1,
+					limits = [8, 13, 21, 55],
+					endYear = candleDate.year,
+					endMonth = candleDate.month,
+					endDay = candleDate.day,
+					endHour = candleDate.hour,
+					isTesting = True
+				)
+
+			whatShouldYouDo = exponentialMovingAverageStrategy.whatShouldYouDo()
+			print(whatShouldYouDo + " -> " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour))
+
+		print("end")
+
+	def verifyDates(self):
+		startDateTime = datetime(self.startYear, self.startMonth, self.startDay, self.startHour)
+		startDate = toBinanceDateFormat(startDateTime)
+
+		endDateTime = datetime(self.endYear, self.endMonth, self.endDay, self.endHour)
+		endDate = toBinanceDateFormat(endDateTime)
+
+		if self.doesInputDateExistAndMakesChronologicalSense(startDate, endDate):
+			savPrint("Invalid input dates", 6)
+			exit()
+
+	def doesInputDateExistAndMakesChronologicalSense(self, startDate, endDate):
+		candles = TestableData.jsonData()
+		prices = []
+
+		startDateFound = False
+		for candle in candles:
+			if startDate == candle[0]:
+				startDateFound = True
+
+			if endDate == candle[0]:
+				if startDateFound:
+					return True
+				else:
+					return False
+		return False
 class Savior:
 
 ####################### CONFIGURABLE #######################
@@ -45,8 +136,8 @@ class Savior:
 
 	def whatShouldYouDo(self):
 		savPrint("Savior Started.", 3)
-		movingAverageStrategy = MovingAverageStrategy()
-		savPrint("YOU SHOULD " + movingAverageStrategy.whatShouldYouDo() + "!!!", 4)
+		exponentialMovingAverageStrategy = ExponentialMovingAverageStrategy()
+		savPrint("YOU SHOULD " + exponentialMovingAverageStrategy.whatShouldYouDo() + "!!!", 4)
 
 	def activateScheduler(self):
 		savPrint("Ctrl + C para matar o Savior.")
@@ -55,49 +146,73 @@ class Savior:
 		scheduler.start()
 
 
-class MovingAverageStrategy:
+class ExponentialMovingAverageStrategy:
 
 
 ####################### CONFIGURABLE #######################
 
 	#PAIR
 	# ETHETC, LTCUSDT, BTCETH, por aí vai, nesse formato, em caixa alta.
-	symbol = "BTCUSDT"
+	symbol = ""
 
 	#INTERVAL
 	# intervalo de 12 horas. só pode ser 12, 8, 4, 2, 1. Por enquanto só pode horas aqui nesse programa. Rola de usar outros tempos.
 	# m -> minutes; h -> hours; d -> days; w -> weeks; M -> months
 	# 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
-	interval = 4
+	interval = 0
 
 	#LIMITS
 	# escala exponencial das médias móveis
-	limits = [8, 13, 21, 55]
+	limits = []
 
 	#END TIME FORMAT
 	# formato: YYYY-MM-dd I
 	# a data final para o cálculo da média móvel.
 	# a data inicial é calculada a partir do interval e o último limite da escala
-	endYear = 2018
-	endMonth = 2
-	endDay = 27
-	endHour = 9
+	endYear = 0
+	endMonth = 0
+	endDay = 0
+	endHour = 0
 
 	#SHOULD PRINT PAYLOAD
 	# exibe ou não o resultado da API
-	shouldPrintPayload = True
+	shouldPrintPayload = None
 
 	#SHOULD PRINT PAYLOAD
 	# exibe ou não o resultado da API
-	shouldPrintMovingAverages = True
+	shouldPrintMovingAverages = None
 
 ####################### CONFIGURABLE #######################
 
 	startTime = ""
 	endTime = ""
 	dataLimit = 0
+	isTesting = None
 
-	def __init__(self):
+	def __init__(
+			self,
+			symbol = "BTCUSDT",
+			interval = 1,
+			limits = [8, 13, 21, 55],
+			endYear = 2018,
+			endMonth = 2,
+			endDay = 27,
+			endHour = 9,
+			shouldPrintPayload = False,
+			shouldPrintMovingAverages = False,
+			isTesting = False
+		):
+
+		self.symbol = symbol
+		self.interval = interval
+		self.limits = limits
+		self.endYear = endYear
+		self.endMonth = endMonth
+		self.endDay = endDay
+		self.endHour = endHour
+		self.shouldPrintPayload = shouldPrintPayload
+		self.shouldPrintMovingAverages = shouldPrintMovingAverages
+		self.isTesting = isTesting
 
 		self.dataLimit = self.limits[-1]*2+1
 
@@ -106,12 +221,12 @@ class MovingAverageStrategy:
 		#   -> subtrai a quantidade de horas do intervalo vezes o último limite
 		endDateWithSubtractedHours = endDate - timedelta(hours=self.interval*self.dataLimit)
 
-		self.startTime = str(int(toEpoch(endDateWithSubtractedHours))).ljust(13, '0')
-		self.endTime = str(int(toEpoch(endDate))).ljust(13, '0')
+		self.startTime = toBinanceDateFormat(endDateWithSubtractedHours)
+		self.endTime = toBinanceDateFormat(endDate)
 
 	def whatShouldYouDo(self):
 		url = KlinesResource().urlFor(self)
-		json = makeRequest(url, self.shouldPrintPayload)
+		json = makeRequest(url, self.shouldPrintPayload, self.isTesting)
 		candles = CandleFactory.candlesWithJson(json)
 
 		movingAverage = []
@@ -217,23 +332,34 @@ class Candle:
 
 
 
-def makeRequest(url, shouldPrintPayload):
+def makeRequest(url, shouldPrintPayload, isTesting = False):
 
-	savPrint("Making Request to URL " + url)
+	if isTesting:
+		response = TestableData.jsonData()
+		if shouldPrintPayload:
+			pp = pprint.PrettyPrinter(indent=4)
+			pp.pprint(response)
+		return response
 
-	r = requests.get(url)
+	else:
+		savPrint("Making Request to URL " + url)
 
-	if r.status_code == 429 :
-		savPrint("You should stop the script", 6)
-	if r.status_code == 418:
-		savPrint("You`ve been banned from Binance", 6)
-		exit()
+		r = requests.get(url)
 
-	if shouldPrintPayload:
-		pp = pprint.PrettyPrinter(indent=4)
-		pp.pprint(r.json())
+		if r.status_code == 429 :
+			savPrint("You should stop the script", 6)
+		if r.status_code == 418:
+			savPrint("You`ve been banned from Binance", 6)
+			exit()
 
-	return r.json()
+		response = r.json()
+
+		if shouldPrintPayload:
+			pp = pprint.PrettyPrinter(indent=4)
+			pp.pprint(response)
+
+		return response
+
 
 def savPrint(string, indent = 1):
 	indented = ""
@@ -244,7 +370,8 @@ def savPrint(string, indent = 1):
 def toEpoch(date):
 	return (date - datetime(1970,1,1)).total_seconds()
 
-
+def toBinanceDateFormat(date):
+	return str(int(toEpoch(date))).ljust(13, '0')
 
 class Resources:
 
@@ -270,4 +397,5 @@ class KlinesResource(Resources):
 		]
 		return self.getUrl()
 
-savior = Savior().start()
+# savior = Savior().start()
+testSavior = TestSavior().start()
