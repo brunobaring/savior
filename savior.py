@@ -36,11 +36,11 @@ class Savior:
 		scheduler.add_job(self.whatShouldYouDo, 'interval', seconds=self.schedulerSeconds)
 		scheduler.start()
 
-Savior().start()
+# Savior().start()
 
-# testSavior = TestSavior(
-# 		endYear = 2017,
-# 		endMonth = 11,
-# 		endDay = 9,
-# 		endHour = 9
-# 	).start()
+testSavior = TestSavior(
+		endYear = 2017,
+		endMonth = 11,
+		endDay = 9,
+		endHour = 9
+	).start()
