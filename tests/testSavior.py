@@ -4,6 +4,8 @@ from tests.testableData import TestableData
 from general import savPrint
 from strategies.exponentialMovingAverageStrategy import ExponentialMovingAverageStrategy
 from models.account import Account
+from models.finalAction import FinalAction
+from models.candle import CandleFactory
 
 class TestSavior:
 	
@@ -17,6 +19,7 @@ class TestSavior:
 	endHour = 0
 	interval = 0
 	account = None
+	operationsValue = 0
 
 	def __init__(
 		self,
@@ -29,7 +32,8 @@ class TestSavior:
 		endDay = 9,
 		endHour = 10,
 		interval = 1,
-		initialBalance = 1000
+		initialBalance = 2,
+		operationsValue = 1
 	):
 		self.startYear = startYear
 		self.startMonth = startMonth
@@ -43,27 +47,30 @@ class TestSavior:
 
 		# self.interval = interval
 		self.account = Account(initialBalance)
-
+		self.operationsValue = operationsValue
 	def start(self):
 		self.whatShouldYouDo()
 
 	def whatShouldYouDo(self):
 		savPrint("Savior Started.", 3)
-		whatShouldYouDo, candle = self.testExponentialMovingAverageStrategy()
+		self.testExponentialMovingAverageStrategy()
 		
-		self.account.evaluateBalance(candle, whatShouldYouDo)
-
 		print("end")
 
 	def testExponentialMovingAverageStrategy(self):
 		candles = TestableData.jsonData()
+		candles = CandleFactory.candlesWithJson(candles)
+		lastFinalAction = None
+
+		savPrint("Initial Balance = R$" + self.account.fiatBalance(candles[0]), 3)
+
 		limits = [8, 13, 21, 55]
 		for i in range(limits[-1]*2+1, len(candles)):
 			candle = candles[i]
-			if str(candle[0]) == (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour))):
-				savPrint("Reached endDate")
+			if str(candle.openTime) == (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour))):
+				savPrint("Reached end")
 				exit()
-			candleDate = datetime.fromtimestamp(float(candle[0])/1000)
+			candleDate = datetime.fromtimestamp(float(candle.openTime)/1000)
 			exponentialMovingAverageStrategy = ExponentialMovingAverageStrategy(
 					interval = 1,
 					limits = limits,
@@ -75,9 +82,10 @@ class TestSavior:
 					isTesting = True
 				)
 			whatShouldYouDo, candle = exponentialMovingAverageStrategy.whatShouldYouDo()
-			print(whatShouldYouDo.value + " -> " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour))
-
-		return whatShouldYouDo, candle
+			if not whatShouldYouDo == FinalAction.HOLD and lastFinalAction != whatShouldYouDo:
+				lastFinalAction = whatShouldYouDo
+				self.account.evaluateFinalAction(candle, whatShouldYouDo, self.operationsValue)
+				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + " \t- R$ " + self.account.fiatBalance(candle))
 
 
 	def verifyDates(self):
@@ -93,17 +101,17 @@ class TestSavior:
 
 	def doesInputDateExistAndMakesChronologicalSense(self, startDate, endDate):
 		candles = TestableData.jsonData()
+		candles = CandleFactory.candlesWithJson(candles)
 		prices = []
 
 		startDateFound = False
 		for candle in candles:
-			if startDate == candle[0]:
+			if startDate == candle.openTime:
 				startDateFound = True
 
-			if endDate == candle[0]:
+			if endDate == candle.openTime:
 				if startDateFound:
 					return True
 				else:
-					print()
 					return False
 		return False

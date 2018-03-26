@@ -105,10 +105,6 @@ class ExponentialMovingAverageStrategy:
 	    moving average
 	    """
 
-	    if len(candles) < 2*n-2:
-	    	savPrint("inappropriate number of candles for EMA", 6)
-	    	exit()
-
 	    s = [] # array(s)
 	    for candle in candles:
 	    	s.append(candle.close)

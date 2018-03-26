@@ -8,7 +8,7 @@ class TestableData:
 		candles = allData()
 		prices = []
 		for candle in candles:
-			prices.append(candle[4])
+			prices.append(candle.close)
 		return prices
 
 	def jsonData():
