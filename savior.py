@@ -40,11 +40,11 @@ class Savior:
 
 testSavior = TestSavior(
 	endYear = 2017,
-	endMonth = 12,
-	endDay = 17,
+	endMonth = 11,
+	endDay = 13,
 	endHour = 1,
 	startYear = 2017,
-	startMonth = 11,
-	startDay = 13,
+	startMonth = 10,
+	startDay = 6,
 	startHour = 1
 ).start()
