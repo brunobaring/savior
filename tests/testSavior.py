@@ -6,6 +6,7 @@ from strategies.exponentialMovingAverageStrategy import ExponentialMovingAverage
 from models.account import Account
 from models.finalAction import FinalAction
 from models.candle import CandleFactory
+from general import toEpoch
 
 class TestSavior:
 	
@@ -62,15 +63,20 @@ class TestSavior:
 		candles = CandleFactory.candlesWithJson(candles)
 		lastFinalAction = None
 
-		savPrint("Initial Balance = R$" + self.account.fiatBalance(candles[0]), 3)
+		savPrint("Initial Balance = USDT" + self.account.fiatBalance(candles[0]), 3)
 
 		limits = [8, 13, 21, 55]
 		for i in range(limits[-1]*2+1, len(candles)):
 			candle = candles[i]
-			if str(candle.openTime) == (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour))):
+
+			if float(candle.closeTime) < float(toBinanceDateFormat(datetime(self.startYear, self.startMonth, self.startDay, self.startHour))):
+				continue
+
+			if str(candle.closeTime + 1) > (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour))):
 				savPrint("Reached end")
 				return
-			candleDate = datetime.fromtimestamp(float(candle.openTime)/1000)
+
+			candleDate = datetime.fromtimestamp(float(candle.closeTime)/1000)
 			exponentialMovingAverageStrategy = ExponentialMovingAverageStrategy(
 					interval = 1,
 					limits = limits,
@@ -85,7 +91,7 @@ class TestSavior:
 			if not whatShouldYouDo == FinalAction.HOLD and lastFinalAction != whatShouldYouDo:
 				lastFinalAction = whatShouldYouDo
 				self.account.evaluateFinalAction(candle, whatShouldYouDo, self.operationsValue)
-				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + " \t- R$ " + self.account.fiatBalance(candle))
+				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + " \t- USDT " + self.account.fiatBalance(candle))
 
 
 	def verifyDates(self):
@@ -106,10 +112,10 @@ class TestSavior:
 
 		startDateFound = False
 		for candle in candles:
-			if startDate == candle.openTime:
+			if startDate == candle.closeTime:
 				startDateFound = True
 
-			if endDate == candle.openTime:
+			if endDate == candle.closeTime:
 				if startDateFound:
 					return True
 				else:

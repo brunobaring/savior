@@ -7,7 +7,6 @@ from tests.testableData import TestableData
 def makeRequest(resource, shouldPrintPayload, isTesting = False):
 
 	url = resource.url()
-
 	if isTesting:
 		response = TestableData.jsonDataWithParamsInUrl(url)
 		if shouldPrintPayload:
