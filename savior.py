@@ -39,12 +39,12 @@ class Savior:
 # Savior().start()
 
 testSavior = TestSavior(
-	endYear = 2017,
-	endMonth = 12,
-	endDay = 17,
+	endYear = 2018,
+	endMonth = 2,
+	endDay = 6,
 	endHour = 1,
 	startYear = 2017,
-	startMonth = 8,
+	startMonth = 12,
 	startDay = 17,
 	startHour = 1
 ).start()
