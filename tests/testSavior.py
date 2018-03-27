@@ -33,8 +33,8 @@ class TestSavior:
 		endDay = 9,
 		endHour = 10,
 		interval = 1,
-		initialBalance = 1,
-		operationsValue = 1
+		initialBalance = 1000, # Começa com 1000 USD
+		operationsValue = 1 # Essa variável tá morta
 	):
 		self.startYear = startYear
 		self.startMonth = startMonth
@@ -63,7 +63,7 @@ class TestSavior:
 		candles = CandleFactory.candlesWithJson(candles)
 		lastFinalAction = None
 
-		savPrint("Initial Balance = USDT" + self.account.fiatBalance(candles[0]), 3)
+		savPrint("Initial Balance = USDT " + str(self.account.quoteBalance))
 
 		limits = [8, 13, 21, 55]
 		for i in range(limits[-1]*2+1, len(candles)):
@@ -74,6 +74,12 @@ class TestSavior:
 
 			if str(candle.closeTime + 1) > (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour))):
 				savPrint("Reached end")
+				if lastFinalAction == FinalAction.BUY:
+					savPrint("Final Balance = BTC " + str(self.account.baseBalance) + " = USDT " + str(self.account.fiatBalance(lastCandle)))
+					savPrint("Rentability = " + str((self.account.fiatBalance(lastCandle)/self.account.initialBalance - 1)*100) + " % ")
+				elif lastFinalAction == FinalAction.SELL:
+					savPrint("Final Balance = USDT " + str(self.account.quoteBalance))
+					savPrint("Rentability = " + str((self.account.quoteBalance/self.account.initialBalance - 1)*100) + " % ")
 				return
 
 			candleDate = datetime.fromtimestamp(float(candle.closeTime)/1000)
@@ -90,8 +96,15 @@ class TestSavior:
 			whatShouldYouDo, candle = exponentialMovingAverageStrategy.whatShouldYouDo()
 			if not whatShouldYouDo == FinalAction.HOLD and lastFinalAction != whatShouldYouDo:
 				lastFinalAction = whatShouldYouDo
+				lastCandle = candle
 				self.account.evaluateFinalAction(candle, whatShouldYouDo, self.operationsValue)
-				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + " \t- USDT " + self.account.fiatBalance(candle))
+				if lastFinalAction == FinalAction.BUY:
+					CURRENCY = " \t- BTC "
+					BALANCE = self.account.baseBalance
+				if lastFinalAction == FinalAction.SELL:
+					CURRENCY = " \t- USDT "
+					BALANCE = self.account.quoteBalance
+				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE))
 
 
 	def verifyDates(self):
