@@ -32,7 +32,7 @@ class TestSavior:
 		endDay = 9,
 		endHour = 10,
 		interval = 1,
-		initialBalance = 2,
+		initialBalance = 1,
 		operationsValue = 1
 	):
 		self.startYear = startYear
@@ -69,7 +69,7 @@ class TestSavior:
 			candle = candles[i]
 			if str(candle.openTime) == (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour))):
 				savPrint("Reached end")
-				exit()
+				return
 			candleDate = datetime.fromtimestamp(float(candle.openTime)/1000)
 			exponentialMovingAverageStrategy = ExponentialMovingAverageStrategy(
 					interval = 1,
