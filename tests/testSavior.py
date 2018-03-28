@@ -74,11 +74,11 @@ class TestSavior:
 			if str(candle.closeTime + 1) > (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour))):
 				savPrint("Reached end")
 				if lastFinalAction == FinalAction.BUY:
-					savPrint("Final Balance = BTC " + str(self.account.baseBalance) + " = USDT " + str(self.account.fiatBalance(lastCandle)))
-					savPrint("Rentability = " + str(calculateRentability(self.account.initialBalance,self.account.fiatBalance(lastCandle),0)) + " % ")
+					savPrint("Final Balance = BTC " + str(roundTo(self.account.baseBalance,8)) + " = USDT " + str(roundTo(self.account.fiatBalance(lastCandle),2)))
+					savPrint("Rentability = " + str(roundTo(calculateRentability(self.account.initialBalance,self.account.fiatBalance(lastCandle),0),2)) + " % ")
 				elif lastFinalAction == FinalAction.SELL:
-					savPrint("Final Balance = USDT " + str(self.account.quoteBalance))
-					savPrint("Rentability = " + str(calculateRentability(self.account.initialBalance,self.account.quoteBalance,0)) + " % ")
+					savPrint("Final Balance = USDT " + str(roundTo(self.account.quoteBalance,2)))
+					savPrint("Rentability = " + str(roundTo(calculateRentability(self.account.initialBalance,self.account.quoteBalance,0),2)) + " % ")
 				return
 
 			candleDate = datetime.fromtimestamp(float(candle.closeTime)/1000)
@@ -99,12 +99,12 @@ class TestSavior:
 				self.account.evaluateFinalAction(candle, whatShouldYouDo, self.operationsValue)
 				if lastFinalAction == FinalAction.BUY:
 					CURRENCY = " \t- BTC "
-					BALANCE = self.account.baseBalance
+					BALANCE = roundTo(self.account.baseBalance,8)
 					lastBuyPrice = candle.close
 					rentabilityLog = " "
 				elif lastFinalAction == FinalAction.SELL:
 					CURRENCY = " \t- USDT "
-					BALANCE = self.account.quoteBalance
+					BALANCE = roundTo(self.account.quoteBalance,2)
 					RENTABILITY = roundTo(calculateRentability(lastBuyPrice, candle.close,0),2)
 					rentabilityLog = " - Rentability = " + str(RENTABILITY) + " % "
 				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE) + rentabilityLog)
