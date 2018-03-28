@@ -1,12 +1,10 @@
 from datetime import datetime
-from general import toBinanceDateFormat
+from general import toBinanceDateFormat, toEpoch, savPrint, calculateRentability, roundTo 
 from tests.testableData import TestableData
-from general import savPrint
 from strategies.exponentialMovingAverageStrategy import ExponentialMovingAverageStrategy
 from models.account import Account
 from models.finalAction import FinalAction
 from models.candle import CandleFactory
-from general import toEpoch
 
 class TestSavior:
 	
@@ -77,10 +75,10 @@ class TestSavior:
 				savPrint("Reached end")
 				if lastFinalAction == FinalAction.BUY:
 					savPrint("Final Balance = BTC " + str(self.account.baseBalance) + " = USDT " + str(self.account.fiatBalance(lastCandle)))
-					savPrint("Rentability = " + str((self.account.fiatBalance(lastCandle)/self.account.initialBalance - 1)*100) + " % ")
+					savPrint("Rentability = " + str(calculateRentability(self.account.initialBalance,self.account.fiatBalance(lastCandle),0)) + " % ")
 				elif lastFinalAction == FinalAction.SELL:
 					savPrint("Final Balance = USDT " + str(self.account.quoteBalance))
-					savPrint("Rentability = " + str((self.account.quoteBalance/self.account.initialBalance - 1)*100) + " % ")
+					savPrint("Rentability = " + str(calculateRentability(self.account.initialBalance,self.account.quoteBalance,0)) + " % ")
 				return
 
 			candleDate = datetime.fromtimestamp(float(candle.closeTime)/1000)
@@ -102,10 +100,14 @@ class TestSavior:
 				if lastFinalAction == FinalAction.BUY:
 					CURRENCY = " \t- BTC "
 					BALANCE = self.account.baseBalance
-				if lastFinalAction == FinalAction.SELL:
+					lastBuyPrice = candle.close
+					rentabilityLog = " "
+				elif lastFinalAction == FinalAction.SELL:
 					CURRENCY = " \t- USDT "
 					BALANCE = self.account.quoteBalance
-				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE))
+					RENTABILITY = roundTo(calculateRentability(lastBuyPrice, candle.close,0),2)
+					rentabilityLog = " - Rentability = " + str(RENTABILITY) + " % "
+				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE) + rentabilityLog)
 
 
 	def verifyDates(self):
