@@ -48,19 +48,3 @@ def toBinanceDateFormat(date):
 	
 def calculateRentability(initialPrice, finalPrice, fees):
 	return (finalPrice / initialPrice - 1) * 100 * (1 - fees) #percent
-
-def repeat_to_length(string_to_expand, length):
-    return (string_to_expand * (int(length/len(string_to_expand))+1))[:length]
-	
-def roundTo(X, n):
-	X = float(X)
-	pointPos = str(X).find(".")
-	if n < len(str(X)[(pointPos+1):]):
-		if float(str(X)[n + pointPos + 1]) >= 5:
-			x = float(str(X)[0:(pointPos+n+1)]) + float("0." + repeat_to_length("0",n-1)+"1")
-			return float(str(x)[0:(pointPos+n+1)])
-		else:
-			x = float(str(X)[0:(pointPos+n+1)])
-			return float(str(x)[0:(pointPos+n+1)])
-	else:
-		return X
