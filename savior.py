@@ -47,5 +47,7 @@ testSavior = TestSavior(
 	startMonth = 12,
 	startDay = 17,
 	startHour = 1,
-	limits = [8, 13, 21, 55]
+	limits = [13, 21, 55], #Original = [8, 13, 21, 55]
+	stopLoss = 10,
+	profitTarget = 35
 ).start()

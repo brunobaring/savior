@@ -19,6 +19,8 @@ class TestSavior:
 	interval = 0
 	account = None
 	operationsValue = 0
+	stopLoss = None
+	profitTarget = None
 
 	def __init__(
 		self,
@@ -33,7 +35,9 @@ class TestSavior:
 		interval = 1,
 		initialBalance = 1000, # Começa com 1000 USD
 		operationsValue = 1, # Essa variável tá morta
-		limits = [8, 13, 21, 55]
+		limits = [8, 13, 21, 55],
+		stopLoss = None,
+		profitTarget = None
 	):
 		self.startYear = startYear
 		self.startMonth = startMonth
@@ -43,6 +47,8 @@ class TestSavior:
 		self.endMonth = endMonth
 		self.endDay = endDay
 		self.endHour = endHour
+		self.stopLoss = stopLoss
+		self.profitTarget = profitTarget
 		self.verifyDates()
 
 		# self.interval = interval
@@ -93,21 +99,47 @@ class TestSavior:
 					isTesting = True
 				)
 			whatShouldYouDo, candle = exponentialMovingAverageStrategy.whatShouldYouDo()
+			lastCandle = candle
+			#profitTarget
+			if self.profitTarget != None and self.account.baseBalance != 0:
+				RENTABILITY = round(calculateRentability(lastBuyPrice, candle.close,0),2)
+				if RENTABILITY >= self.profitTarget:
+					self.account.evaluateFinalAction(candle, FinalAction.SELL, self.operationsValue)
+					lastFinalAction = FinalAction.SELL
+					CURRENCY = " \t- USDT "
+					BALANCE = round(self.account.quoteBalance,2)
+					RENTABILITY = round(calculateRentability(lastBuyPrice, candle.close,0),2)
+					rentabilityLog = " - Target achieved - Rentability = " + str(RENTABILITY) + " % "
+					print("SELL" + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE) + rentabilityLog)
+			#end profitTarget
+			#stopLoss
+			if self.stopLoss != None and self.account.baseBalance != 0:
+				RENTABILITY = round(calculateRentability(lastBuyPrice, candle.close,0),2)
+				if RENTABILITY < -self.stopLoss:
+					self.account.evaluateFinalAction(candle, FinalAction.SELL, self.operationsValue)
+					lastFinalAction = FinalAction.SELL
+					CURRENCY = " \t- USDT "
+					BALANCE = round(self.account.quoteBalance,2)
+					RENTABILITY = round(calculateRentability(lastBuyPrice, candle.close,0),2)
+					rentabilityLog = " - StopLoss - Rentability = " + str(RENTABILITY) + " % "
+					print("SELL" + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE) + rentabilityLog)
+			#end stopLoss
 			if not whatShouldYouDo == FinalAction.HOLD and lastFinalAction != whatShouldYouDo:
 				lastFinalAction = whatShouldYouDo
-				lastCandle = candle
-				self.account.evaluateFinalAction(candle, whatShouldYouDo, self.operationsValue)
-				if lastFinalAction == FinalAction.BUY:
+				if lastFinalAction == FinalAction.BUY and self.account.quoteBalance != 0:
+					self.account.evaluateFinalAction(candle, whatShouldYouDo, self.operationsValue)
 					CURRENCY = " \t- BTC "
 					BALANCE = round(self.account.baseBalance,8)
 					lastBuyPrice = candle.close
 					rentabilityLog = " "
-				elif lastFinalAction == FinalAction.SELL:
+					print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE) + rentabilityLog)
+				elif lastFinalAction == FinalAction.SELL and self.account.baseBalance != 0:
+					self.account.evaluateFinalAction(candle, whatShouldYouDo, self.operationsValue)
 					CURRENCY = " \t- USDT "
 					BALANCE = round(self.account.quoteBalance,2)
 					RENTABILITY = round(calculateRentability(lastBuyPrice, candle.close,0),2)
 					rentabilityLog = " - Rentability = " + str(RENTABILITY) + " % "
-				print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE) + rentabilityLog)
+					print(whatShouldYouDo.value + " \t->\t " + str(candleDate.year) + "/" + str(candleDate.month) + "/" + str(candleDate.day) + " " + str(candleDate.hour) + CURRENCY + str(BALANCE) + rentabilityLog)
 
 
 	def verifyDates(self):
