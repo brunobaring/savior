@@ -1,0 +1,25 @@
+ ->>> Savior Started.
+
+ -> Initial Balance = USDT 1000
+
+BUY 	->	 2018/1/1 0 	- BTC 0.07290564 
+SELL 	->	 2018/1/1 15 	- USDT 963.18 - Rentability = -3.68 % 
+BUY 	->	 2018/1/2 14 	- BTC 0.06946889 
+SELL 	->	 2018/1/8 4 	- USDT 1088.6 - Rentability = 13.02 % 
+BUY 	->	 2018/1/13 6 	- BTC 0.07704199 
+SELL 	->	 2018/1/14 9 	- USDT 1049.54 - Rentability = -3.59 % 
+BUY 	->	 2018/1/19 17 	- BTC 0.09085521 
+SELL 	->	 2018/1/19 22 	- USDT 1020.39 - Rentability = -2.78 % 
+BUY 	->	 2018/1/20 2 	- BTC 0.087663 
+SELL 	->	 2018/1/21 19 	- USDT 994.5 - Rentability = -2.54 % 
+BUY 	->	 2018/1/24 21 	- BTC 0.08887352 
+SELL 	->	 2018/1/26 11 	- USDT 934.95 - Rentability = -5.99 % 
+BUY 	->	 2018/1/27 7 	- BTC 0.08282596 
+SELL 	->	 2018/1/29 13 	- USDT 932.22 - Rentability = -0.29 % 
+ -> Reached end
+
+ -> Final Balance = USDT 932.22
+
+ -> Rentability = -6.78 % 
+
+end

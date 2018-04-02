@@ -1,0 +1,59 @@
+ ->>> Savior Started.
+
+ -> Initial Balance = USDT 1000
+
+BUY 	->	 2017/8/23 4 	- BTC 0.24387805 
+SELL 	->	 2017/8/28 6 	- USDT 1016.73 - Rentability = 1.67 % 
+BUY 	->	 2017/8/28 20 	- BTC 0.23526432 
+SELL 	->	 2017/9/2 15 	- USDT 1054.91 - Rentability = 3.76 % 
+BUY 	->	 2017/9/6 2 	- BTC 0.23427735 
+SELL 	->	 2017/9/8 18 	- USDT 992.87 - Rentability = -5.88 % 
+BUY 	->	 2017/9/12 6 	- BTC 0.22956472 
+SELL 	->	 2017/9/12 21 	- USDT 952.72 - Rentability = -4.04 % 
+BUY 	->	 2017/9/16 5 	- BTC 0.24875225 
+SELL 	->	 2017/9/21 11 	- USDT 963.04 - Rentability = 1.08 % 
+BUY 	->	 2017/9/23 18 	- BTC 0.25659564 
+SELL 	->	 2017/10/3 11 	- USDT 1095.92 - Rentability = 13.8 % 
+BUY 	->	 2017/10/5 21 	- BTC 0.25288964 
+SELL 	->	 2017/10/17 12 	- USDT 1411.12 - Rentability = 28.76 % 
+BUY 	->	 2017/10/19 10 	- BTC 0.24822538 
+SELL 	->	 2017/10/23 13 	- USDT 1431.52 - Rentability = 1.45 % 
+BUY 	->	 2017/10/26 10 	- BTC 0.2505269 
+SELL 	->	 2017/10/28 13 	- USDT 1425.5 - Rentability = -0.42 % 
+BUY 	->	 2017/10/29 8 	- BTC 0.24577552 
+SELL 	->	 2017/11/9 12 	- USDT 1739.11 - Rentability = 22.0 % 
+BUY 	->	 2017/11/13 22 	- BTC 0.27173556 
+SELL 	->	 2017/11/23 22 	- USDT 2207.11 - Rentability = 26.91 % 
+BUY 	->	 2017/11/24 22 	- BTC 0.26846693 
+SELL 	->	 2017/11/25 3 	- USDT 2182.7 - Rentability = -1.11 % 
+BUY 	->	 2017/11/25 6 	- BTC 0.26553503 
+SELL 	->	 2017/11/30 14 	- USDT 2399.11 - Rentability = 9.91 % 
+BUY 	->	 2017/12/1 14 	- BTC 0.22506519 
+SELL 	->	 2017/12/7 15 	- USDT 3387.01 - Target achieved - Rentability = 41.18 % 
+BUY 	->	 2017/12/10 20 	- BTC 0.21900143 
+SELL 	->	 2017/12/13 18 	- USDT 3372.62 - Rentability = -0.42 % 
+BUY 	->	 2017/12/14 13 	- BTC 0.20843036 
+SELL 	->	 2017/12/19 11 	- USDT 3512.47 - Rentability = 4.15 % 
+BUY 	->	 2018/1/1 0 	- BTC 0.25607876 
+SELL 	->	 2018/1/1 15 	- USDT 3383.16 - Rentability = -3.68 % 
+BUY 	->	 2018/1/2 14 	- BTC 0.2440073 
+SELL 	->	 2018/1/8 4 	- USDT 3823.68 - Rentability = 13.02 % 
+BUY 	->	 2018/1/13 6 	- BTC 0.27060755 
+SELL 	->	 2018/1/14 9 	- USDT 3686.49 - Rentability = -3.59 % 
+BUY 	->	 2018/1/19 17 	- BTC 0.31912605 
+SELL 	->	 2018/1/19 22 	- USDT 3584.1 - Rentability = -2.78 % 
+BUY 	->	 2018/1/20 2 	- BTC 0.30791354 
+SELL 	->	 2018/1/21 19 	- USDT 3493.15 - Rentability = -2.54 % 
+BUY 	->	 2018/1/24 21 	- BTC 0.31216542 
+SELL 	->	 2018/1/26 11 	- USDT 3283.98 - Rentability = -5.99 % 
+BUY 	->	 2018/1/27 7 	- BTC 0.29092358 
+SELL 	->	 2018/1/29 13 	- USDT 3274.41 - Rentability = -0.29 % 
+BUY 	->	 2018/2/7 12 	- BTC 0.40169219 
+SELL 	->	 2018/2/20 2 	- USDT 4609.95 - Target achieved - Rentability = 40.79 % 
+ -> Reached end
+
+ -> Final Balance = USDT 4609.95
+
+ -> Rentability = 360.99 % 
+
+end

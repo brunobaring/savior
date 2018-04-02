@@ -39,15 +39,15 @@ class Savior:
 # Savior().start()
 
 testSavior = TestSavior(
-	endYear = 2018,
-	endMonth = 3,
-	endDay = 25,
+	endYear = 2017,
+	endMonth = 12,
+	endDay = 17,
 	endHour = 1,
-	startYear = 2016,
-	startMonth = 12,
-	startDay = 17,
+	startYear = 2017,
+	startMonth = 11,
+	startDay = 13,
 	startHour = 1,
 	limits = [13, 21, 55], #Original = [8, 13, 21, 55]
 	stopLoss = 10,
-	profitTarget = 35
+	profitTarget = 40
 ).start()
