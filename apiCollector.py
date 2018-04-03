@@ -61,7 +61,7 @@ class ApiCollector:
 				break
 
 			minutes = randint(6, 10)
-			sleep(minutes * 1)
+			sleep(minutes * 60)
 
 			self.startTimeDate += timedelta(seconds=self.intervalSeconds * self.dataLimit)
 			self.endTimeDate += timedelta(seconds=self.intervalSeconds * self.dataLimit)
