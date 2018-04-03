@@ -39,6 +39,7 @@ class TestSavior:
 		limits = [8, 13, 21, 55],
 		stopLoss = 0,
 		profitTarget = 0
+
 	):
 		self.startYear = startYear
 		self.startMonth = startMonth
@@ -93,17 +94,26 @@ class TestSavior:
 					shouldPrintMovingAverages = False,
 					isTesting = True
 				)
+
 			exponentialMovingAverageGuess = exponentialMovingAverageStrategy.whatShouldYouDo()
 			self.transaction = Transaction(exponentialMovingAverageGuess, self.stopLoss)
 
 			if lastCandle != None and lastAction == GuessConstant.BUY:
 				rentability = Transaction.rentability(lastCandle.close, candle.close,0)
+
 				stopLossStrategy = StopLossStrategy(
 						stopLoss = self.stopLoss,
 						rentability = rentability
 					)
 				stopLossGuess = stopLossStrategy.whatShouldYouDo()
 				self.transaction.addPossibilities(stopLossGuess)
+
+				profitTargetStrategy = ProfitTargetStrategy(
+						stopLoss = self.profitTarget,
+						rentability = rentability
+					)
+				profitTargetGuess = profitTargetStrategy.whatShouldYouDo()
+				self.transaction.addPossibilities(profitTargetGuess)
 
 
 			action = self.transaction.action()
