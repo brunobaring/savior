@@ -5,7 +5,6 @@ from tests.testableData import TestableData
 
 
 def makeRequest(resource, shouldPrintPayload, isTesting = False):
-
 	url = resource.url()
 	if isTesting:
 		response = TestableData.jsonDataWithParamsInUrl(url)
@@ -45,6 +44,3 @@ def toEpoch(date):
 
 def toBinanceDateFormat(date):
 	return str(int(toEpoch(date))).ljust(13, '0')
-	
-def calculateRentability(initialPrice, finalPrice, fees):
-	return (finalPrice / initialPrice - 1) * 100 * (1 - fees) #percent

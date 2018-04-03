@@ -2,7 +2,10 @@ from datetime import datetime, timedelta
 from general import toBinanceDateFormat, makeRequest, savPrint
 from resources.resources import KlinesResource
 from models.candle import CandleFactory
-from models.finalAction import FinalAction
+from models.transaction import Transaction
+from models.guess import Guess
+from constants.constants import GuessConstant
+from resources.constants import ApiIntervalConstant
 
 class ExponentialMovingAverageStrategy:
 
@@ -17,7 +20,7 @@ class ExponentialMovingAverageStrategy:
 	# intervalo de 12 horas. só pode ser 12, 8, 4, 2, 1. Por enquanto só pode horas aqui nesse programa. Rola de usar outros tempos.
 	# m -> minutes; h -> hours; d -> days; w -> weeks; M -> months
 	# 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
-	interval = 0
+	interval = None
 
 	#LIMITS
 	# escala exponencial das médias móveis
@@ -56,18 +59,19 @@ class ExponentialMovingAverageStrategy:
 			endMonth = 2,
 			endDay = 27,
 			endHour = 9,
+			endMinute = 10,
 			shouldPrintPayload = False,
 			shouldPrintMovingAverages = False,
 			isTesting = False
 		):
-
 		self.symbol = symbol
-		self.interval = interval
+		self.interval = ApiIntervalConstant.objectFor(interval)
 		self.limits = limits
 		self.endYear = endYear
 		self.endMonth = endMonth
 		self.endDay = endDay
 		self.endHour = endHour
+		self.endMinute = endMinute
 		self.shouldPrintPayload = shouldPrintPayload
 		self.shouldPrintMovingAverages = shouldPrintMovingAverages
 		self.isTesting = isTesting
@@ -77,7 +81,7 @@ class ExponentialMovingAverageStrategy:
 		# -> pega a data final
 		endDate = datetime(self.endYear,self.endMonth,self.endDay,self.endHour)
 		#   -> subtrai a quantidade de horas do intervalo vezes o último limite
-		endDateWithSubtractedHours = endDate - timedelta(hours=self.interval*self.dataLimit)
+		endDateWithSubtractedHours = endDate - timedelta(seconds=ApiIntervalConstant.secondsFor(self.interval) * self.dataLimit)
 
 		self.startTime = toBinanceDateFormat(endDateWithSubtractedHours)
 		self.endTime = toBinanceDateFormat(endDate)
@@ -90,7 +94,7 @@ class ExponentialMovingAverageStrategy:
 		for limit in self.limits:
 			movingAverage.append(self.ema(candles, limit))
 
-		return self.evaluateMovingAverage(movingAverage), candles[-1]
+		return self.evaluateMovingAverage(movingAverage) # , candles[-1]
 
 	def ema(self, candles, n):
 	    """
@@ -144,7 +148,7 @@ class ExponentialMovingAverageStrategy:
 				isAtLeastOneEmaBelowInPreviousTendency = True
 			if lastEma[-1] - ema[-1] < 0:
 				if i == len(movingAverages)-2 and isAtLeastOneEmaBelowInPreviousTendency:
-					return FinalAction.BUY
+					return Guess(GuessConstant.BUY, 1)
 			else:
 				break
 
@@ -154,8 +158,8 @@ class ExponentialMovingAverageStrategy:
 				isAtLeastOneEmaAboveInPreviousTendency = True
 			if lastEma[-1] - ema[-1] > 0:
 				if i == len(movingAverages)-2 and isAtLeastOneEmaAboveInPreviousTendency:
-					return FinalAction.SELL
+					return Guess(GuessConstant.SELL, 1)
 			else:
 				break
 
-		return FinalAction.HOLD
+		return Guess(GuessConstant.HOLD, 1)

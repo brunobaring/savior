@@ -19,7 +19,7 @@ class KlinesResource(Resources):
 	def url(self):
 		self.params = [
 			"symbol=" + self.data.symbol,
-			"interval=" + str(self.data.interval) + "h",
+			"interval=" + self.data.interval.value,
 			"startTime=" + self.data.startTime,
 			"endTime=" + self.data.endTime,
 			"limit=" + str(self.data.dataLimit)
