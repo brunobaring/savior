@@ -4,7 +4,7 @@ class Transaction:
 
 	guesses = None
 	candle = None
-	
+
 	def __init__(self, guess, stoploss = 100):
 		self.guesses = []
 		self.guesses.append(guess)
@@ -13,6 +13,7 @@ class Transaction:
 	def action(self):
 
 		guessConstants = list(GuessConstant)
+
 		sums = {}
 
 		for guess in self.guesses:
@@ -42,6 +43,12 @@ class Transaction:
 
 	def addPossibilities(self, guess):
 		self.guesses.append(guess)
+
+	def printablePossibilities(self):
+		printablePossibilities = ""
+		for guess in self.guesses:
+			printablePossibilities += guess.strategy
+		return printablePossibilities
 
 	@staticmethod
 	def rentability(initialPrice, finalPrice, fees):

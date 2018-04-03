@@ -9,6 +9,6 @@ class StopLossStrategy:
 
 	def whatShouldYouDo(self):
 		if self.rentability < -self.stopLoss:
-			return Guess(GuessConstant.SELL, 10)
+			return Guess(GuessConstant.SELL, 10, "StopLossStrategy")
 		else:
-			return Guess(GuessConstant.HOLD, 1)
+			return Guess(GuessConstant.HOLD, 1, "")

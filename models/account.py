@@ -48,7 +48,7 @@ class Account():
 		rentability = ""
 		if self.lastTransaction != None and self.transaction.action() == GuessConstant.SELL:
 			rentability = str(Transaction.rentability(self.lastTransaction.candle.close, self.transaction.candle.close, 0))
-			
+
 		print(
 			self.transaction.action().value +
 			"\t->\t" +
@@ -66,7 +66,9 @@ class Account():
 			" " + 
 			self.finalBalanceFormated() + 
 			"\t" + 
-			rentability
+			rentability + 
+			" " + 
+			self.transaction.printablePossibilities()
 		)
 
 	def printFinalBalance(self):

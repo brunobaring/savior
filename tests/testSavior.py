@@ -70,7 +70,7 @@ class TestSavior:
 	def whatShouldYouDo(self):
 		candles = TestableData.jsonData()
 		candles = CandleFactory.candlesWithJson(candles)
-		fakeSellGuess = Guess(GuessConstant.SELL, 10)
+		fakeSellGuess = Guess(GuessConstant.SELL, 10, "ForcedInitialSell")
 		lastAction = GuessConstant.SELL
 		lastCandle = None
 		savPrint("Initial Balance = USDT " + str(self.account.quoteBalance))

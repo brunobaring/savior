@@ -148,7 +148,7 @@ class ExponentialMovingAverageStrategy:
 				isAtLeastOneEmaBelowInPreviousTendency = True
 			if lastEma[-1] - ema[-1] < 0:
 				if i == len(movingAverages)-2 and isAtLeastOneEmaBelowInPreviousTendency:
-					return Guess(GuessConstant.BUY, 1)
+					return Guess(GuessConstant.BUY, 1, "ExponentialMovingAverage")
 			else:
 				break
 
@@ -158,8 +158,8 @@ class ExponentialMovingAverageStrategy:
 				isAtLeastOneEmaAboveInPreviousTendency = True
 			if lastEma[-1] - ema[-1] > 0:
 				if i == len(movingAverages)-2 and isAtLeastOneEmaAboveInPreviousTendency:
-					return Guess(GuessConstant.SELL, 1)
+					return Guess(GuessConstant.SELL, 1, "ExponentialMovingAverage")
 			else:
 				break
 
-		return Guess(GuessConstant.HOLD, 1)
+		return Guess(GuessConstant.HOLD, 1, "")

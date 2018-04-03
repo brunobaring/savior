@@ -9,6 +9,6 @@ class ProfitTargetStrategy:
 
 	def whatShouldYouDo(self):
 		if self.rentability >= self.profitTarget:
-			return Guess(GuessConstant.SELL, 10)
+			return Guess(GuessConstant.SELL, 10, "ProfitTarget")
 		else:
-			return Guess(GuessConstant.HOLD, 1)
+			return Guess(GuessConstant.HOLD, 1, "")
