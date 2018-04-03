@@ -8,6 +8,8 @@ from models.candle import CandleFactory
 from models.guess import Guess
 from constants.constants import GuessConstant
 from strategies.stopLossStrategy import StopLossStrategy
+from strategies.profitTargetStrategy import ProfitTargetStrategy
+
 
 class TestSavior:
 	
@@ -109,7 +111,7 @@ class TestSavior:
 				self.transaction.addPossibilities(stopLossGuess)
 
 				profitTargetStrategy = ProfitTargetStrategy(
-						stopLoss = self.profitTarget,
+						profitTarget = self.profitTarget,
 						rentability = rentability
 					)
 				profitTargetGuess = profitTargetStrategy.whatShouldYouDo()
