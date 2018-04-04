@@ -9,6 +9,7 @@ from models.guess import Guess
 from constants.constants import GuessConstant
 from strategies.stopLossStrategy import StopLossStrategy
 from strategies.profitTargetStrategy import ProfitTargetStrategy
+from strategies.testExponentialMovingAverageStrategy import TestExponentialMovingAverageStrategy
 
 
 class TestSavior:
@@ -74,8 +75,17 @@ class TestSavior:
 		lastAction = GuessConstant.SELL
 		lastCandle = None
 		savPrint("Initial Balance = USDT " + str(self.account.quoteBalance))
+		
+		EMAs = []
+		for i, limit in enumerate(self.limits):
+			EMAs.append(ExponentialMovingAverageStrategy.ema(self, candles, limit))
+			a = -len(candles)-1 + self.limits[-1]*2
+			#print(a)
+			EMAs[i] = EMAs[i][a:-1]
+		#print(len(EMAs[0]),len(EMAs[1]),len(EMAs[2]), len(candles))
 
 		for i in range(self.limits[-1]*2+1, len(candles)):
+			#print(i)
 			
 			candle = candles[i]
 			if float(candle.closeTime) < float(toBinanceDateFormat(datetime(self.startYear, self.startMonth, self.startDay, self.startHour, self.startMinute))):
@@ -84,10 +94,17 @@ class TestSavior:
 			if str(candle.closeTime + 1) > (toBinanceDateFormat(datetime(self.endYear, self.endMonth, self.endDay, self.endHour, self.endMinute))):
 				break
 
+			EMA = []			
+			for j, limit in enumerate(self.limits):
+				a = i - (self.limits[-1]*2+1)
+				#print(j,i, a)
+				EMA.append([EMAs[j][a-1] , EMAs[j][a]])
+				
 			candleDate = datetime.fromtimestamp(float(candle.closeTime)/1000)
-			exponentialMovingAverageStrategy = ExponentialMovingAverageStrategy(
+			exponentialMovingAverageStrategy = TestExponentialMovingAverageStrategy(
 					interval = "1h",
 					limits = self.limits,
+					EMAs = EMA,
 					endYear = candleDate.year,
 					endMonth = candleDate.month,
 					endDay = candleDate.day,

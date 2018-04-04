@@ -7,7 +7,7 @@ from models.guess import Guess
 from constants.constants import GuessConstant
 from resources.constants import ApiIntervalConstant
 
-class ExponentialMovingAverageStrategy:
+class TestExponentialMovingAverageStrategy:
 
 
 ####################### CONFIGURABLE #######################
@@ -25,6 +25,10 @@ class ExponentialMovingAverageStrategy:
 	#LIMITS
 	# escala exponencial das médias móveis
 	limits = []
+	
+	#EMAs
+	# já recebe as arrays de EMAs
+	EMAs = []
 
 	#END TIME FORMAT
 	# formato: YYYY-MM-dd I
@@ -55,6 +59,7 @@ class ExponentialMovingAverageStrategy:
 			symbol = "BTCUSDT",
 			interval = 1,
 			limits = [8, 13, 21, 55],
+			EMAs = [],
 			endYear = 2018,
 			endMonth = 2,
 			endDay = 27,
@@ -67,6 +72,7 @@ class ExponentialMovingAverageStrategy:
 		self.symbol = symbol
 		self.interval = ApiIntervalConstant.objectFor(interval)
 		self.limits = limits
+		self.EMAs = EMAs
 		self.endYear = endYear
 		self.endMonth = endMonth
 		self.endDay = endDay
@@ -79,20 +85,18 @@ class ExponentialMovingAverageStrategy:
 		self.dataLimit = self.limits[-1]*2+1
 
 		# -> pega a data final
-		endDate = datetime(self.endYear,self.endMonth,self.endDay,self.endHour)
+		#endDate = datetime(self.endYear,self.endMonth,self.endDay,self.endHour)
 		#   -> subtrai a quantidade de horas do intervalo vezes o último limite
-		endDateWithSubtractedHours = endDate - timedelta(seconds=ApiIntervalConstant.secondsFor(self.interval) * self.dataLimit)
+		#endDateWithSubtractedHours = endDate - timedelta(seconds=ApiIntervalConstant.secondsFor(self.interval) * self.dataLimit)
 
-		self.startTime = toBinanceDateFormat(endDateWithSubtractedHours)
-		self.endTime = toBinanceDateFormat(endDate)
+		#self.startTime = toBinanceDateFormat(endDateWithSubtractedHours)
+		#self.endTime = toBinanceDateFormat(endDate)
 
 	def whatShouldYouDo(self):
-		json = makeRequest(KlinesResource(self), self.shouldPrintPayload, self.isTesting)
-		candles = CandleFactory.candlesWithJson(json)
+		#json = makeRequest(KlinesResource(self), self.shouldPrintPayload, self.isTesting)
+		#candles = CandleFactory.candlesWithJson(json)
 
-		movingAverage = []
-		for limit in self.limits:
-			movingAverage.append(self.ema(candles, limit))
+		movingAverage = self.EMAs
 		return self.evaluateMovingAverage(movingAverage) # , candles[-1]
 
 	def ema(self, candles, n):
